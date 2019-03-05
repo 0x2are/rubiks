@@ -188,7 +188,8 @@ let turnCounter = 0;
 
 
 function setup() {
-  createCanvas(1280, 720, WEBGL);
+  const canvas = createCanvas(1280, 720, WEBGL);
+  canvas.parent("p5-holder");
   
   //initialise the cubes
   for (let z = 0; z < cubeSize; ++z) {
