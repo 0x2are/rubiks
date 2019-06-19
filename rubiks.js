@@ -173,7 +173,7 @@ const BLUE   =  [0  , 0  , 255];
 const BLACK  =  [0  , 0  , 0  ];
 const HALF_PI = Math.PI / 2;
 
-const cubeSize  = 2;   //number of cubes
+const cubeSize  = 3;   //number of cubes
 const boxSize   = 48;  //size of each cube
 const spacing   = 8;   //spacing between cubes
 const qTurnTime = 256; //time in ms for a quarter turn
