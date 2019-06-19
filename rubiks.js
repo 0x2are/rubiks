@@ -196,8 +196,7 @@ let turnCounter = 0;
 
 
 function setup() {
-  const canvas = createCanvas(400, 400, WEBGL);
-  canvas.parent("p5-holder");
+  createCanvas(1280, 720, WEBGL);
   
   //initialise the cubes
   for (let z = 0; z < cubeSize; ++z) {
@@ -219,7 +218,7 @@ function setup() {
 
 
 function draw() {
-  background("#181818");
+  background(42,40,45);
   orbitControl();
    
   for (const c of cubes) {  
