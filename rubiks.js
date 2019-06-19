@@ -1,5 +1,6 @@
 //Author: Nick Dean
 
+
 class Quaternion {
   constructor(w = 1, i = 0, j = 0, k = 0) {
     this.w = w;
@@ -17,26 +18,31 @@ class Quaternion {
   }
 
 
+  //hamiltonian product
   static mult(q1, q2) {
-    const v1 = createVector(q1.i, q1.j, q1.k);
-    const v2 = createVector(q2.i, q2.j, q2.k);
-    
-    const v = p5.Vector.mult(v2, q1.w);
-    v.add(p5.Vector.mult(v1, q2.w));
-    v.add(p5.Vector.cross(v1, v2));
-    
+    const {w: a1, i: b1, j: c1, k: d1} = q1;
+    const {w: a2, i: b2, j: c2, k: d2} = q2;
+
+    let w = a1*a2 - b1*b2 - c1*c2 - d1*d2;
+
+    //bit of floating point rounding
+    const r = Math.round(w);
+    const d = w - r;
+    if (Math.abs(d) < 1e-15) {
+      w -= d;
+    }
+
     return new Quaternion(
-      q1.w*q2.w - p5.Vector.dot(v1, v2),
-      v.x,
-      v.y,
-      v.z
+      w,
+      a1*b2 + b1*a2 + c1*d2 - d1*c2,
+      a1*c2 - b1*d2 + c1*a2 + d1*b2,
+      a1*d2 + b1*c2 - c1*b2 + d1*a2
     );
   }
 
 
   magnitude() {
-    const {w,i,j,k} = this;
-    return Math.sqrt(w*w + i*i + j*j + k*k);
+    return Math.sqrt(w**2 + i**2 + j**2 + k**2);
   }
 
 
@@ -55,13 +61,14 @@ class Quaternion {
     const s = Math.sin(angle/2);
     const axis = createVector(1, 0, 0);
 
-    if (s != 0) {
+    //s != 0 but accounting for floating point error
+    if (Math.abs(s) >= 1e-15) {
       axis.x = this.i / s;
       axis.y = this.j / s,
       axis.z = this.k / s;
     }
 
-    return {axis, angle};
+    return {axis, angle: isNaN(angle) ? 0 : angle};
   }
 }
 
@@ -78,6 +85,7 @@ class Cube {
     //needs to be reset when piece assigned new position in cube
     this.calculateColours();
   }
+
 
   draw() {
     const hSize = boxSize / 2;
@@ -155,17 +163,17 @@ class Cube {
 }
 
 
-const WHITE  =  [255,255,255];
-const YELLOW =  [255,255,0  ];
-const ORANGE =  [255,128,0  ];
-const MAGENTA = [255,0  ,255];
-const RED    =  [255,0  ,0  ];
-const GREEN  =  [0  ,255,0  ];
-const BLUE   =  [0  ,0  ,255];
-const BLACK  =  [0  ,0  ,0  ];
+const WHITE  =  [255, 255, 255];
+const YELLOW =  [255, 255, 0  ];
+const ORANGE =  [255, 128, 0  ];
+const MAGENTA = [255, 0  , 255];
+const RED    =  [255, 0  , 0  ];
+const GREEN  =  [0  , 255, 0  ];
+const BLUE   =  [0  , 0  , 255];
+const BLACK  =  [0  , 0  , 0  ];
 const HALF_PI = Math.PI / 2;
 
-const cubeSize  = 3;   //number of cubes
+const cubeSize  = 2;   //number of cubes
 const boxSize   = 48;  //size of each cube
 const spacing   = 8;   //spacing between cubes
 const qTurnTime = 256; //time in ms for a quarter turn
@@ -179,8 +187,8 @@ const cubes = [];
 const shift = -0.5 * (boxSize + spacing) * (cubeSize - 1);
 const m = boxSize + spacing;
 
-let selectedAxis  = 0; //axis of the cube to rotate
-let selectedIndex = 0; //currently selected layer on the selected axis
+let selectedAxis  = 0;     //axis of the cube to rotate
+let selectedIndex = 0;     //currently selected layer on the selected axis
 let turnAnimStartTime = 0; //time that selected layer started turning
 
 //tracks the number of rotations to apply and remaining number of turn animations
@@ -212,7 +220,7 @@ function setup() {
 function draw() {
   background(42,40,45);
   orbitControl();
-  
+   
   for (const c of cubes) {  
     push();
     
@@ -365,6 +373,7 @@ function applyAllRotations() {
           c.rot = Quaternion.mult(zQuat, c.rot);
           break;
       }
+
     });
   }
 }
