@@ -196,7 +196,8 @@ let turnCounter = 0;
 
 
 function setup() {
-  createCanvas(1280, 720, WEBGL);
+  const canvas = createCanvas(1280, 720, WEBGL);
+  canvas.parent("p5-holder");
   
   //initialise the cubes
   for (let z = 0; z < cubeSize; ++z) {
@@ -218,7 +219,7 @@ function setup() {
 
 
 function draw() {
-  background(42,40,45);
+  background("#181818");
   orbitControl();
    
   for (const c of cubes) {  
@@ -248,6 +249,8 @@ function draw() {
 
 
 function keyPressed() {
+  const SPACE = (' ').charCodeAt(0);
+
   //if selected index or axis is changed, apply all rotations
   switch(keyCode) {
     case DOWN_ARROW:
@@ -276,7 +279,7 @@ function keyPressed() {
       selectedAxis = (selectedAxis + 1) % 3;
       break;
 
-    case (' ').charCodeAt(0):
+    case SPACE:
       if (turnCounter === 0) {
         turnAnimStartTime = millis();
       }
@@ -286,6 +289,8 @@ function keyPressed() {
       
       break;
   }
+
+  return keyCode in [SPACE, UP_ARROW, LEFT_ARROW];
 }
 
 
