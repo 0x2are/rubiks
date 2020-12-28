@@ -219,7 +219,7 @@ function setup() {
 
 
 function draw() {
-  background("#181818");
+  clear();
   orbitControl();
    
   for (const c of cubes) {  
